@@ -103,7 +103,6 @@ exports.login = async (req, res) => {
         email: user.email,
         id: user._id,
       };
-      console.log("✅ Session set:", req.session.user);
 
       return res.status(200).json({
         message: "Login successful (session)",

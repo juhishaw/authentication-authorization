@@ -11,8 +11,6 @@ router.use(express.json());
 router.post("/create-payment-intent", async (req, res) => {
   try {
     const { amount, email } = req.body;
-  console.log("Amount:", amount);
-  console.log("Email:", email); 
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -33,7 +31,6 @@ router.get("/history/:userId", async (req, res) => {
   const payments = await Payment.find({ userId: req.params.userId }).sort({
     createdAt: -1,
   });
-  console.log("Fetching history for:", req.params.userId, payments.length);
   res.json(payments);
 });
 

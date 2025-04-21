@@ -47,19 +47,15 @@ app.post(
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.log("Webhook signature verification failed:", err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     try {
       switch (event.type) {
         case "payment_intent.succeeded":
-          console.log("🔥 Received webhook event:", event.type);
           const paymentIntent = event.data.object;
-          console.log("📦 PaymentIntent ID:", paymentIntent.id);
           const userEmail =
             paymentIntent.metadata?.email || paymentIntent.receipt_email;
-          console.log("📧 Email from metadata:", userEmail);
 
           if (!userEmail) throw new Error("No email in payment metadata");
 
@@ -77,12 +73,9 @@ app.post(
             status: paymentIntent.status,
           });
 
-          console.log("✅ Payment saved to DB for", user.email);
-
           const subject = "Payment Received 🎉";
           const html = `<h3>Hi ${user.email},</h3><p>Your payment of $${(paymentIntent.amount / 100).toFixed(2)} was successful.</p><p>Welcome to premium!</p>`;
           await sendEmail(user.email, subject, html);
-          console.log(`✅ Email sent to ${user.email}`);
           break;
 
         case "payment_intent.payment_failed":
@@ -104,7 +97,7 @@ app.post(
 // ❗ Add this AFTER webhook route
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://10.91.92.103:3000"],
     credentials: true,
   })
 );
